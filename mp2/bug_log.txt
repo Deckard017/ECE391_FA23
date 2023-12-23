@@ -1,0 +1,128 @@
+mp2.1:
+    Semantic Errors:    
+        Bug1: I can’t move my image up and down but I could make it go left and right. 
+
+        Solution to bug1: By comparing with different situation between move horizontally and vertically, 
+        I can easily locate the bug to draw vertical line function
+        because the function draw horizontal line is definitely correct as that’s you provide for us. 
+        When I check my draw vertical line, 
+        I found that I made a mistake of number of address that it should add of each move. 
+        I should add the whole row instead of one.
+        Then I change it and I found that my image can be moved up and down.
+        And to be honest, this stupid bug took me about half an hour... And I only change one line to solve this...
+
+        Bug2: When I add the status bar to the screen, I found that there is no one extra pixel above the characters.
+
+        Solution to bug2: I change the for loop for Y, I set it to 1 at first instead of 0.
+        In this way, I could solve this problem, but I need to minus one
+        when I try to calculate the accurate position.
+        This bug is quite easy that I only spent about 5 minutes. I just change some initial values on a few lines.
+
+
+    Algorithm Errors:
+        Bug3: When I add the status bar to the screen, I found that the characters on the screen are in wrong position. ( In a mess )
+
+        Solution to bug3: This is because I mistake the caculation of offset when I try to 
+        convert text to image, When calculating the offset, I should devide 4 but I don't.
+        This is a bug that really hard for me to find out.
+        As I thought my calulation of the offset is the correct, 
+        so it could take me about nearly one hour to debug this.
+        And the solution to this bug is only change one line to devide the offset by 4.
+
+        Bug4：There is only the room name on the center of the bar.
+
+        Solution to bug4: I should make the thing on the bar to the charcter fisrt.
+        So that my text to image function could handle it. So in the adventure.c game loop function,
+        I add one line, using memset to set all the things in the string to ' '. Then the bug is solved.
+        This took me only 15 minutes, but I didn't know how to solve this at the begin.
+        But I tried to type out some numbers on the bar, then I found that they are also in the middle.
+        Then I realized that I should set the bar to empty at first.
+        I only added one line of memset.
+
+
+        Bug5: I found the first image of my game can not move up and down but the demo could.
+
+        Solution to bug5：This is because the image of the first page is around 200. 
+        And the initial scroll size of Y is 200, so the first page would not move up and down.
+        But after adding the bar to the screen. There is only 182 lines that I can see from the screen.
+        So I change the scroll size of Y to 182.
+        This took me really a long time. About two nights?
+        But it only needs one second to solve this, just changing 200 to 182.
+
+        Bug6 I noticed there is one strange line at the bottom of the image and above the bar.
+
+        Solution to bug6: This is because I set the line compare register to 016C (182*2) at first.
+        But the row starts from 0. So 364th row should be 363, and it is 016B. After I change this, all goes well.
+        This took me 10 minutes, when I looked at the strange line, I realized that it should be some mistakes of line compare register.
+        Then I checked the documentation of VGA, and found that the value in line compare register should be a specific line.
+
+
+    Ambiguity Errors:
+        Bug7: I found there is no '_' on the last position of the image.
+
+        Solution to bug7: Honestly, this is not a bug. But I still add a '_' at the
+        39th position of the string to make it seems like the seem to demo.
+        It took me one second, just added one line...
+
+mp2.2:
+    Semantic Errors: 
+        Bug1: I have mixed the order of the button should be.
+
+        Solution to bug1: The correct order of the button should be "r l d u C B A S".
+        However, at first I don't know the correct answer, I just use the original order
+        and just sent these to the buttons_bits in the shared-data. And this makes me get the crazy
+        effect on the button when I try to use input to debug.
+        By the way, this bug didn't take me too much long time, just about 30 minutes?
+
+        Bug2: Wrong use "tuxctl_ldisc_put" function
+
+        Solution to bug2: At first, I break the array that should be passed by tuxctl_ldisc_put into two parts.
+        The former part is some OPCODES, and the latter one is the value that the LED should be showed on the screen.
+        But when I watch the function "tuxctl_ldisc_put", I found that there is a lock inside the function, which 
+        means that we should not send the message in two parts. Then I easily changed my two arrays into one array.
+        This bug is easy to debug. It only took me one second after I saw the lock in "tuxctl_ldisc_put".
+
+        Bug3: Mixing the order of LED.
+
+        Solution to bug3: At first, when I tried to handle with the set LEDs function, I made a wrong dicision the order 
+        of 4 LEDs. And the result is that the value show on the screen will just show in the oppsite order. 
+        For example: the screen should show "0 0 . 1 6" I got "6 1 . 0 0". Then I looked back to the order of LED
+        and the argument that passed to tuxctl_LED_set function. I found that my order is almost inverse.
+        This bug is really easy to find as it is shown on the screen.
+
+        Bug4: The color loss for palette.
+
+        Solution to bug4: At first, when I try to assign left color to level_2, I forget about this step.
+        And when I compared with my image to the demo, I found that there are some unknown differences. So I looked back to the 
+        pdf, and I realized that I missed one part which was really crazy...
+        And this took me lots of time, as I don't know I missed a whole part in the pdf...
+
+        Bug5: Forget to check whether the division is zero.
+
+        Solution to bug5: When I try to divide the sum_of_RGB by the total_pixel, I forgot to check whether the division number is zero.
+        This is stupid also took me lots of time to deal with. As it is a little bit hard to find.
+
+        Bug6: Wrong bits shift in level_4
+
+        Solution to bug6: the color in level_4 should be 4:4:4. I know this at all, but I forgot the original color is 5:6:5.
+        I just thought it was 6:6:6. So at first, I just right shift 2 bits and the result I got was really crazy...
+        This took me some time to debug, but it is really easy to debug...
+
+    Algorithm Errors:
+        Bug7: One tick, multiple moves.
+
+        Solution to bug7: When I tried to click the button on the tux emulator. I found that if I stayed on the A, B, C buttons
+        a little bit long. The PC will consider that I took more than one commands. And the image will switch mutiple times,
+        which is wrong. But if I typed move_down, left, right and up. It should execute multiple commands.
+        So I set another global variable "last_command", if the current command is the same to the last_command.
+        I will check what exact command that is. If it is move to down or left or up or right. I will set the button_choosen to 1
+        which allows the PC to execute the command continuously. If the command is to switch the image. I will set the button_choosen to 0,
+        which makes sure that only one image changes at one time.
+        This bug is easy to locate and took me only about 10 minutes.
+
+        Bug8: wrong calculation of the time on tux.
+
+        Solution to bug8: At first, I did the wrong calculation of time on the tux displayer. And I just tried to use another way 
+        to calculate the time, and it worked out.
+        This bug is not easy to debug. As I need to check out which part of my code have the bug. Maybe in the ioctl maybe in the input.C.
+        It took me about 30 minutes.

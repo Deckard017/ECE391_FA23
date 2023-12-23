@@ -1,0 +1,107 @@
+=======================================================checkpoint 1============================================================
+Bug Log 1: Kernel Memory Test Failure
+
+Description: During the test for paging, the test for reading kernel memory failed. This issue was resolved by correcting the range of memory allocated for the kernel.
+Resolution Time: It took us approximately [insert time] to identify and fix this issue. We had to review the memory allocation and ensure the correct range for kernel memory was set.
+Bug Log 2: Page Fault Triggered
+
+Description: While testing paging, we triggered a page fault due to an incorrect line of code. The faulty code was attempting to dereference an uninitialized pointer (*tester = *loop;). We rectified this by changing it to tester = *loop;, which resolved the problem.
+Resolution Time: Debugging and fixing this issue took us around [insert time]. It required us to carefully review the code responsible for page fault and correct the uninitialized pointer issue.
+Bug Log 3: Keyboard Interrupts Not Working
+
+Description: We realized that keyboard interrupts weren't working as expected. This was due to an oversight where the sti() function call in kernel.c was mistakenly commented out. Uncommenting sti() enabled us to receive keyboard interrupts and echo characters on the screen.
+Resolution Time: It took us [insert time] to identify and address this issue. We had to inspect the code to find the commented-out line and uncomment it for the keyboard interrupts to work correctly.
+Bug Log 4: Incorrect Character Echoing
+
+Description: We encountered an issue where characters weren't echoing correctly on the screen. The problem was caused by using single quotes ('') instead of double quotes ("") in keyboard.c. This error affected the printf function for printing content to the screen.
+Resolution Time: Debugging and resolving this issue took us around [insert time]. We needed to replace single quotes with double quotes to ensure the correct output format.
+Bug Log 5: RTC Data Port Reset
+
+Description: The screen displayed strange content after an RTC-related operation. We realized that we had forgotten to reset the data port in the RTC code, leading to unexpected behavior. Resetting the port resolved the issue, and the screen displayed the expected content.
+Resolution Time: It took us [insert time] to identify and fix this problem. We had to review the RTC code and add the necessary data port reset to ensure the proper functioning of the screen.
+
+
+=======================================================checkpoint 2============================================================
+
+Bug Log 1:
+
+Description: While testing the "read directory" function, the program enters a strange loop that continuously reads the file "sigtest."
+Resolution Time: The issue was identified as setting the buffer length to 32 and accessing "buffer[32]," which exceeded the buffer size and caused a change in the loop counter, resulting in an infinite loop.
+Resolution: The buffer size was increased to accommodate the access to "buffer[32], solving the infinite loop problem.
+
+Bug Log 2:
+
+Description: When attempting to print the content of the file "hello," the words "hello" and "ELF" couldn't be found on the screen.
+Resolution: The issue was resolved by scanning the file and successfully skipping through any spaces within the file.
+
+Bug Log 3:
+
+Description: In situations where both the Capslock and Shift keys are pressed, the expected behavior for letters is lowercase. However, it was observed that sometimes they appeared in uppercase and sometimes in lowercase.
+Resolution: After about an hour of debugging, it was discovered that there was an issue with an "if" statement in the code. This issue was identified and fixed to ensure consistent letter case when Capslock and Shift keys are used.
+
+Bug Log 4:
+
+Description: The video memory location did not match the cursor position. Specifically, the values for screen_x and screen_y did not correspond to cursor_x and cursor_y.
+Resolution: A link function was added to the "putc" function to ensure that the cursor's position matched the video memory location. This resolved the discrepancy between screen_x and cursor_x, as well as screen_y and cursor_y.
+
+Bug Log 5:
+
+Description: In scrolling up, we were able to move up every line up by one, but the last line wasn't cleared
+Resolution: The reason was that we mis-swapped the NUM_COLS and NUM_ROWS in our loop of moving up by one line.
+
+Bug Log 6:
+
+Description: In our terminal test, sometimes we print an extra blank line
+Resolution: The reason was that we put the \n character into the buffer too, which caused it to be printed.
+
+
+CHECKPOINT 3
+
+Bug Log 1: ls system call fails
+Reason: we use "fopen(filename)==-1" to check whether a file is available. However, in our original version, fopen function also checks the filetype of a certain file. 
+This makes any attempt to open directory fails, thus failing ls.
+
+Bug Log 2: page fault when we try to check syserr--test8(also fails the test)
+Reason: In syserr--test8, it tests large syscall number and syscall 0. Firstly, when encountering large syscall numbers we forget to set eax to -1, 
+causing test failure. Also, we forget to check boundaries, allowing system call 0 (.long 0) , causing page fault.
+
+Bug Log 3: after executing any command in shell, the shell window will not appear again. (particularly, I mean the line " 391OS> " )
+Reason: In terminal write function, we clear the buf (puting zeros into it) after we print characters, causing troubles for next "391OS>".
+
+4. We got "terminated abnormally" when we input an invalid command, which should've given "command
+not found". Turned out we caller-saved eax in our system call assembly linkage, which caused the linkage to
+give wrong return values to the shell.
+
+5. We got an extra line after "ECE391OS>" every time. The reason was that we printed an extra line at the end of 
+terminal_write. After we deleted that, the behavior was normal.
+
+
+
+==========================================================================================CHECKPOINT 4================================================================================
+Bug Log 1: fish system call fails
+Reason: We wrongly set "screen start" to 0x8400000, which is the start of page directory, not video memory, thus triggering page fault
+
+Bug Log 2: system calls with space in front of them fails (E.g. "   ls")
+Reason: we forget to skip "spaces" in helper_function_of_args.
+
+
+==========================================================================================CHECKPOINT 5================================================================================
+
+Bug Log 1: fail to print of each terminal
+Reason: In more details, we print the first terminal to the third terminal, because we forgot to set up the curr_schedule to -1, we set it to 0 instead
+
+Bug log 2: page fault after print the first terminal
+Reason: Then we can't use keyboard to print anything on the terminal. This is because we set the page of the first schedule, and it outside the bound.
+
+Bug log 3: another process's halt will influence the current one
+Reason: In more details, when we type fish in terminal 1, and type ls in another terminal, Then the ls will call the halt and terminate the fish.
+This is because that we use a global variable in syscall.c and for each process, it will call the halt and use the global variable which will make mistakes.
+
+Bug log 4: we can't switch the terminal
+Reason: This is due to the wrong set of scancode of F1, F2 and F3.
+
+Bug log 5: wrong put
+Reason: At the first we have not set the different put, one for program and one for user, this makes we print the result to the wrong terminal.
+
+Bug log 6: wrong address of switch
+Reason: This is because the address we set of video memory switch is wrong, which go out of bounds. And this leads to page fault.
