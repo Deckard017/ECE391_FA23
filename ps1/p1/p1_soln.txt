@@ -1,0 +1,9 @@
+print/x solution
+
+x/2h $esp
+
+info registers
+
+break ece.c:391
+
+target remote 10.0.2.2:1234
